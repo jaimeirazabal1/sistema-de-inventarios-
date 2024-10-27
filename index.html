@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>InventoryApp</title>
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      connect-src 'self' http://localhost:3000; 
+      style-src 'self' 'unsafe-inline'; 
+      script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+  <!-- Select2 CSS -->
+  <link href="styles/select2.min.css" rel="stylesheet" />
+
+  <!-- Select2 JS -->
+  <!-- Incluir Bootstrap CSS desde CDN sin integridad -->
+  <!-- jQuery (Necesario para DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="js/jquery.dataTables.min.js"></script>
+  <script src="js/select2.min.js"></script>
+
+  <link rel="stylesheet" href="styles/jquery.dataTables.min.css">
+
+  <link href="styles/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles/styles.css">
+</head>
+
+<body>
+  <div class="container mt-5">
+
+    <div id="login-section" class="my-section">
+      <h2 class="mb-3">Iniciar Sesión</h2>
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Usuario:</label>
+          <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña:</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+      </form>
+      <p>¿No tienes una cuenta? <button id="showRegister" class="btn btn-link">Regístrate aquí</button></p>
+    </div>
+
+    <div id="register-section" class="my-section hidden">
+      <h2 class="mb-3">Registrar Usuario</h2>
+      <form id="registerForm">
+        <div class="mb-3">
+          <label for="regUsername" class="form-label">Usuario:</label>
+          <input type="text" class="form-control" id="regUsername" name="regUsername" required>
+        </div>
+        <div class="mb-3">
+          <label for="regPassword" class="form-label">Contraseña:</label>
+          <input type="password" class="form-control" id="regPassword" name="regPassword" required>
+        </div>
+        <button type="submit" class="btn btn-success">Registrar</button>
+      </form>
+      <p>¿Ya tienes una cuenta? <button id="showLogin" class="btn btn-link">Inicia sesión aquí</button></p>
+    </div>
+
+    <div id="app-section" class="my-section hidden">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Administración de Inventarios</h2>
+        <button id="logoutBtn" class="btn btn-danger">Cerrar Sesión</button>
+      </div>
+
+      <h3>Agregar Producto</h3>
+      <form id="addProductForm" class="mb-4">
+        <div class="mb-3">
+          <label for="name" class="form-label">Nombre:</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+          <label for="category" class="form-label">Categoría:</label>
+          <select class="form-control select2" id="category" name="category" style="width: 100%;">
+            <option value="">Selecciona una categoría</option>
+            <!-- Las opciones serán llenadas dinámicamente por renderer.js -->
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="quantity" class="form-label">Cantidad:</label>
+          <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Ubicación:</label>
+          <select class="form-control select2" id="location" name="location" style="width: 100%;">
+            <option value="">Selecciona una ubicación</option>
+            <!-- Las opciones serán llenadas dinámicamente por renderer.js -->
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success">Agregar</button>
+      </form>
+
+      <h3>Lista de Productos</h3>
+      <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar productos...">
+      <table id="productsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Cantidad</th>
+            <th>Ubicación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Productos se cargarán aquí -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Modal para Editar Producto -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="editProductForm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Editar Producto</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editProductId" name="id">
+            <div class="mb-3">
+              <label for="editName" class="form-label">Nombre:</label>
+              <input type="text" class="form-control" id="editName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCategory" class="form-label">Categoría:</label>
+              <select class="form-control select2" id="editCategory" name="category" style="width: 100%;">
+                <option value="">Selecciona una categoría</option>
+                <!-- Las opciones serán llenadas dinámicamente por renderer.js -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editQuantity" class="form-label">Cantidad:</label>
+              <input type="number" class="form-control" id="editQuantity" name="quantity" required>
+            </div>
+            <div class="mb-3">
+              <label for="editLocation" class="form-label">Ubicación:</label>
+              <select class="form-control select2" id="editLocation" name="location" style="width: 100%;">
+                <option value="">Selecciona una ubicación</option>
+                <!-- Las opciones serán llenadas dinámicamente por renderer.js -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Incluir Bootstrap JS desde CDN sin integridad -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "InventoryApp",
+  "version": "1.0.0",
+  "description": "Aplicación de administración de inventarios para pequeñas tiendas",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "backend": "node server/server.js",
+    "package": "electron-packager . InventoryApp --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "keywords": [],
+  "author": "Jaime Irazabal",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^9.0.3",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "electron": "^33.0.2",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "electron-packager": "^17.1.2"
+  }
+}
